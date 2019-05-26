@@ -1,0 +1,246 @@
+	bgscr 0
+	picload "gazou.png"
+	dim minhx,ginfo_sizex
+	dim maxhx,ginfo_sizex
+	dim minhy,ginfo_sizey
+	dim maxhy,ginfo_sizey
+	yohakux=30
+	yohakuy=30
+	gx=ginfo_sizex
+	gy=ginfo_sizey
+
+//////////////////////////////ここからは余白づくりと切り取る境目の処理//////////////////////////////
+	
+	x=0
+	y=0
+	a=0
+	j=0
+	shiro=0
+	
+	repeat gy
+		repeat gx
+			pget x,y
+			if (ginfo_r!255)|(ginfo_g!255)|(ginfo_b!255){a=1:break}//全白か全白でないか見分ける
+			x++
+			await 0
+		loop
+
+		if a=0{shiro++}
+		else{shiro=0}//白いところに入ったかどうか見極め、白の幅を数える
+		
+		if shiro=yohakuy{maxhy(j)=y:j++}//余白分の白いところがあったらその位置を配列変数に保存
+		
+		a=0
+		x=0
+		y++
+		await 0
+	loop //白かどうか判別（横、左から下へ）
+
+
+	x=0
+	y=0
+	a=0
+	k=0
+	shiro=0
+	
+	repeat gx
+		repeat gy
+			pget x,y
+			if (ginfo_r!255)|(ginfo_g!255)|(ginfo_b!255){a=1:break}//全白か全白でないか見分ける
+			y++
+			await 0
+		loop
+
+		if a=0{shiro++}
+		else{shiro=0}//白いところに入ったかどうか見極め、白の幅を数える
+		
+		if shiro=yohakux{maxhx(k)=x:k++}//余白分の白いところがあったらその位置を配列変数に保存
+		
+		a=0
+		y=0
+		x++
+		await 0
+	loop //白かどうか判別（縦、下から右へ）
+
+
+	x=0
+	y=0
+	a=0
+	l=0
+	shiro=0
+	
+	repeat gy
+		repeat gx
+			pget gx-x,gy-y
+			if (ginfo_r!255)|(ginfo_g!255)|(ginfo_b!255){a=1:break}//全白か全白でないか見分ける
+			x++
+			await 0
+		loop
+
+		if a=0{shiro++}
+		else{shiro=0}//白いところに入ったかどうか見極め、白の幅を数える
+		
+		if shiro=yohakuy{minhy(l)=gy-y:l++}//余白分の白いところがあったらその位置を配列変数に保存
+		
+		a=0
+		x=0
+		y++
+		await 0
+	loop //白かどうか判別（横、左から下へ）
+
+
+	x=0
+	y=0
+	a=0
+	m=0
+	shiro=0
+	
+	repeat gx
+		repeat gy
+			pget gx-x,gy-y
+			if (ginfo_r!255)|(ginfo_g!255)|(ginfo_b!255){a=1:break}//全白か全白でないか見分ける
+			y++
+			await 0
+		loop
+
+		if a=0{shiro++}
+		else{shiro=0}//白いところに入ったかどうか見極め、白の幅を数える
+		
+		if shiro=yohakux{minhx(m)=gx-x:m++}//余白分の白いところがあったらその位置を配列変数に保存
+		
+		a=0
+		y=0
+		x++
+		await 0
+	loop //白かどうか判別（縦、下から右へ）
+
+//////////////////////////////ここまでは余白づくりと切り取る境目の処理//////////////////////////////
+
+
+	i=0
+	tate=0
+	yoko=0
+	
+	repeat j-1
+		repeat k-1
+			screen 1,maxhx(yoko+1)-minhx(k-yoko-1)+2,maxhy(tate+1)-minhy(j-tate-1)+2,0,0,0
+			pos 1,1
+			gcopy 0,minhx(k-yoko-1),minhy(j-tate-1),maxhx(yoko+1)-minhx(k-yoko-1),maxhy(tate+1)-minhy(j-tate-1)
+			gosub *kiri
+			screen 2,kmaxhx(1)-kminhx(1),kmaxhy(1)-kminhy(1),0,0,0
+			gcopy 1,kminhx(1),kminhy(1),kmaxhx(1)-kminhx(1),kmaxhy(1)-kminhy(1)
+			bmpsave str(i)+".bmp"
+			yoko++
+			i++
+			await 100
+		loop
+		yoko=0
+		tate++
+	loop
+	
+	end
+
+*kiri
+	kx=0
+	ky=0
+	ka=0
+	kj=0
+	kshiro=0
+	
+	repeat ginfo_sizey
+		repeat ginfo_sizex
+			pget kx,ky
+			if (ginfo_r!255)|(ginfo_g!255)|(ginfo_b!255){ka=1:break}//全白か全白でないか見分ける
+			kx++
+			await 0
+		loop
+
+		if ka=0{kshiro++}
+		else{kshiro=0}//白いところに入ったかどうか見極め、白の幅を数える
+		
+		if kshiro=yohakuy{kmaxhy(kj)=ky:kj++}//余白分の白いところがあったらその位置を配列変数に保存
+		
+		ka=0
+		kx=0
+		ky++
+		await 0
+	loop //白かどうか判別（横、左から下へ）
+
+
+	kx=0
+	ky=0
+	ka=0
+	kk=0
+	kshiro=0
+	
+	repeat ginfo_sizex
+		repeat ginfo_sizey
+			pget kx,ky
+			if (ginfo_r!255)|(ginfo_g!255)|(ginfo_b!255){ka=1:break}//全白か全白でないか見分ける
+			ky++
+			await 0
+		loop
+
+		if ka=0{kshiro++}
+		else{kshiro=0}//白いところに入ったかどうか見極め、白の幅を数える
+		
+		if kshiro=yohakux{kmaxhx(kk)=kx:kk++}//余白分の白いところがあったらその位置を配列変数に保存
+		
+		ka=0
+		ky=0
+		kx++
+		await 0
+	loop //白かどうか判別（縦、下から右へ）
+
+
+	kx=0
+	ky=0
+	ka=0
+	kl=0
+	kshiro=0
+	
+	repeat ginfo_sizey
+		repeat ginfo_sizex
+			pget ginfo_sizex-kx,ginfo_sizey-ky
+			if (ginfo_r!255)|(ginfo_g!255)|(ginfo_b!255){ka=1:break}//全白か全白でないか見分ける
+			kx++
+			await 0
+		loop
+
+		if ka=0{kshiro++}
+		else{kshiro=0}//白いところに入ったかどうか見極め、白の幅を数える
+		
+		if kshiro=yohakuy{kminhy(kl)=ginfo_sizey-ky:kl++}//余白分の白いところがあったらその位置を配列変数に保存
+		
+		ka=0
+		kx=0
+		ky++
+		await 0
+	loop //白かどうか判別（横、左から下へ）
+
+
+	kx=0
+	ky=0
+	ka=0
+	km=0
+	kshiro=0
+	
+	repeat ginfo_sizex
+		repeat ginfo_sizey
+			pget ginfo_sizex-kx,ginfo_sizey-ky
+			if (ginfo_r!255)|(ginfo_g!255)|(ginfo_b!255){ka=1:break}//全白か全白でないか見分ける
+			ky++
+			await 0
+		loop
+
+		if ka=0{kshiro++}
+		else{kshiro=0}//白いところに入ったかどうか見極め、白の幅を数える
+		
+		if kshiro=yohakux{kminhx(km)=ginfo_sizex-kx:km++}//余白分の白いところがあったらその位置を配列変数に保存
+		
+		ka=0
+		ky=0
+		kx++
+		await 0
+	loop //白
+	return
